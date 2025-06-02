@@ -31,7 +31,6 @@ private:
         return (n + (alignment - 1)) & ~(alignment - 1);
     }
 
-
     // How can we ensure it is properly aligned ? static_cast???
     alignas(alignment) std::byte buffer_[N];
     std::byte *ptr_{};

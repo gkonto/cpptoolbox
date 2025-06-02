@@ -80,3 +80,15 @@ TEST_CASE("Arena pointer_in_buffer is correct")
     std::byte dummy;
     CHECK(!arena.pointer_in_buffer(&dummy));
 }
+
+TEST_CASE("Arena proper alignment")
+{
+    constexpr size_t SIZE = alignof(std::max_align_t) * 2;
+    Arena<SIZE> arena;
+    CHECK(arena.size() == SIZE);
+    auto *p = arena.allocate(1);
+    CHECK(arena.pointer_in_buffer(p));
+    auto *p2 = arena.allocate(1);
+    CHECK(arena.pointer_in_buffer(p2));
+    CHECK(p2 - p == alignof(std::max_align_t));
+}
