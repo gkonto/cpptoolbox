@@ -20,14 +20,12 @@ public:
     auto allocate(size_t n) -> std::byte *;
     auto deallocate(std::byte *p, size_t n) noexcept -> void;
 
-    auto pointer_in_buffer(const std::byte *p) const noexcept -> bool
-    {
+    auto pointer_in_buffer(const std::byte *p) const noexcept -> bool {
         return std::uintptr_t(p) >= std::uintptr_t(buffer_) &&
                std::uintptr_t(p) < std::uintptr_t(buffer_) + N;
     }
 private:
-    static auto align_up(size_t n) noexcept -> size_t
-    {
+    static auto align_up(size_t n) noexcept -> size_t {
         return (n + (alignment - 1)) & ~(alignment - 1);
     }
 
@@ -37,8 +35,7 @@ private:
 };
 
 template<size_t N>
-auto Arena<N>::allocate(size_t n) -> std::byte *
-{
+auto Arena<N>::allocate(size_t n) -> std::byte * {
     const auto aligned_n = align_up(n);
     const auto available_bytes =
         static_cast<decltype(aligned_n)>(buffer_ + N - ptr_);
@@ -52,8 +49,7 @@ auto Arena<N>::allocate(size_t n) -> std::byte *
 }
 
 template<size_t N>
-auto Arena<N>::deallocate(std::byte *p, size_t n) noexcept -> void
-{
+auto Arena<N>::deallocate(std::byte *p, size_t n) noexcept -> void {
     if (pointer_in_buffer(p))
     {
         n = align_up(n);
