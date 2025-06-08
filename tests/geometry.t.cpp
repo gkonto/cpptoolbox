@@ -1,6 +1,11 @@
 #include "doctest.h"
 #include "matrix.hpp"
+#include <cmath>
 
+bool are_equal(double d1, double d2)
+{
+    return std::abs(d1 - d2) < 0.6;
+}
 
 TEST_CASE("Transpose matrix")
 {
@@ -121,6 +126,47 @@ TEST_CASE("Matrix Determinant")
     CHECK(det(mat2) == 14);
     CHECK(det(mat3) == 22);
 }
+
+TEST_CASE("Inverse of 2x2 matrix")
+{
+    double m[2][2] = {{4, 7}, {2, 6}};
+    double inv[2][2] = {};
+    bool result = inverse(m, inv);
+
+    CHECK(result == true);
+    CHECK(are_equal(inv[0][0], 0.6));
+    CHECK(are_equal(inv[0][1], -0.7));
+    CHECK(are_equal(inv[1][0], -0.2));
+    CHECK(are_equal(inv[1][1], 0.4));
+}
+
+TEST_CASE("Inverse of 3x3 matrix")
+{
+    double m[3][3] = {{3, 0, 2}, {2, 0, -2}, {0, 1, 1}};
+    double inv[3][3] = {};
+    bool result = inverse(m, inv);
+
+    CHECK(result == true);
+    CHECK(are_equal(inv[0][0], 0.2));
+    CHECK(are_equal(inv[0][1], 0.2));
+    CHECK(are_equal(inv[0][2], 0.0));
+    CHECK(are_equal(inv[1][0], -0.2));
+    CHECK(are_equal(inv[1][1], 0.3));
+    CHECK(are_equal(inv[1][2], 1.0));
+    CHECK(are_equal(inv[2][0], 0.2));
+    CHECK(are_equal(inv[2][1], -0.3));
+    CHECK(are_equal(inv[2][2], 0.0));
+}
+
+TEST_CASE("Inverse of singular (non-invertible) matrix")
+{
+    double m[2][2] = {{2, 4}, {1, 2}}; // determinant is 0
+    double inv[2][2] = {};
+    bool result = inverse(m, inv);
+
+    CHECK(result == false);
+}
+
 
 // TEST_CASE("Point in triangle")
 // {
