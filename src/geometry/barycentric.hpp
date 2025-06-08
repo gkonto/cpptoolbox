@@ -7,12 +7,13 @@ struct Point
     float y;
 };
 
-void Barycentric(Point a,
-                 Point b,
-                 Point c,
-                 Point p,
-                 float &u,
-                 float &v,
-                 float &w);
+
+// void Barycentric(Point a,
+//                  Point b,
+//                  Point c,
+//                  Point p,
+//                  float &u,
+//                  float &v,
+//                  float &w);
 
 #endif
