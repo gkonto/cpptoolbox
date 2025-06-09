@@ -6,6 +6,7 @@ set(SHORTALLOC_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/shortalloc.t.cpp")
 set(GEOMETRY_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/matrix.t.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/vector.t.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils.t.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plane.t.cpp)
 
 add_executable(
