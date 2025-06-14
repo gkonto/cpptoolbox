@@ -1,11 +1,12 @@
 #ifndef CONVEX_HPP_INCLUDED
 #define CONVEX_HPP_INCLUDED
 
+#include "matrix.hpp"
+#include "vector.hpp"
 #include <float.h>
 #include <limits.h>
 #include <span>
 #include <stddef.h>
-
 
 template<typename T>
 size_t pointFarthestFromEdge(const T (&a)[2],
@@ -24,10 +25,11 @@ size_t pointFarthestFromEdge(const T (&a)[2],
     for (int i = 0; i < points.size(); ++i)
     {
         T pia[2] = {0};
-        sub(points[i] - a);
+        sub(points[i], a, pia);
 
-        float d = dot(pia, eperp); // d is proportionalto distance along eperp
-        float r = dot(pia, ba);    // r is proportional to distance along ba
+        float d =
+            dotProd(pia, eperp);    // d is proportionalto distance along eperp
+        float r = dotProd(pia, ba); // r is proportional to distance along ba
         if (d > maxVal || (d == maxVal && r > rightMostVal))
         {
             bestIndex = i;
