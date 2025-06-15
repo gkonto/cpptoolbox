@@ -16,6 +16,21 @@ Point2d operator-(const Point2d &a, const Point2d &b)
     return {a.x - b.x, a.y - b.y};
 }
 
+Matrix33 operator*(const Matrix33 &a, const Matrix33 &b)
+{
+    Matrix33 trg;
+    trg.m[0] = 0.f;
+    trg.m[1] = 0.f;
+    trg.m[2] = 0.f;
+    trg.m[3] = 0.f;
+    trg.m[4] = 0.f;
+    trg.m[5] = 0.f;
+    trg.m[6] = 0.f;
+    trg.m[7] = 0.f;
+    trg.m[8] = 0.f;
+    return trg;
+}
+
 bool intersection(const AABB3d a, const AABB3d &b)
 {
     if (std::abs(a.c.x - b.c.x) > a.r[0] + b.r[0])
@@ -153,4 +168,101 @@ size_t pointFarthestFromEdge(const Point2d &a,
         }
     }
     return bestIndex;
+}
+
+// 2-by-2 Symmetric Schur decomposition. Given an n-by-n symmetric matrix
+// and indices p, q such that 1 <= p < q <= n, computes a sine-cosine pair
+// (s, c) that will serve to form a Jacobi rotation matrix.
+//
+// See Golub, Van Load, Matrix Computations, 3rd ed, p428
+static void SymSchur2(const Matrix33 &a, int p, int q, float &c, float &s)
+{
+    if (std::abs(a[p][q]) > 0.0001f)
+    {
+        float r = (a[q][q] - a[p][p]) / (2.0f * a[p][q]);
+        float t;
+        if (r >= 0.0f)
+            t = 1.0f / (r + std::sqrt(1.0f + r * r));
+        else
+            t = -1.0f / (-r + std::sqrt(1.0f + r * r));
+        c = 1.0f / std::sqrt(1.0f + t * t);
+        s = t * c;
+    }
+    else
+    {
+        c = 1.0f;
+        s = 0.0f;
+    }
+}
+
+void Jacobi(const Matrix33 &a, Matrix33 &v)
+{
+    auto a_copied = a;
+    Matrix33 J, b, t;
+    float prevoff, c, s;
+    // Initialize v to identify matrix
+    for (int i = 0; i < 3; ++i)
+    {
+        v[i][i] = 1.0f;
+    }
+
+    // Repeat for some maximum number of iterations
+    constexpr int MAX_ITERATIONS = 50;
+    for (int n = 0; n < MAX_ITERATIONS; ++n)
+    {
+        // Find largest off-diagonal absolute element a[p][q]
+        int p = 0, q = 1;
+        for (int i = 0; i < 3; ++i)
+        {
+            for (int j = 0; j < 3; ++j)
+            {
+                if (i == j)
+                    continue;
+                if (std::abs(a_copied[i][j]) > std::abs(a_copied[p][q]))
+                {
+                    p = i;
+                    q = j;
+                }
+            }
+        }
+
+        // Compute the Jacobi rotationmatrix J(p, q, theta)
+        // (This code can be optimized for the three different cases of rotation)
+        SymSchur2(a_copied, p, q, c, s);
+        for (int i = 0; i < 3; ++i)
+        {
+            J[i][0] = J[i][1] = J[i][2] = 0.0f;
+            J[i][i] = 1.0f;
+        }
+        J[p][p] = c;
+        J[p][q] = s;
+        J[q][p] = -s;
+        J[q][q] = c;
+
+        // Cumulate rotations into what will contain the eigenvectors
+        v = v * J;
+
+        // Make 'a' more diagonal, until just eigenvalues remain on diagonal
+        a_copied = (J.transpose() * a_copied) * J;
+
+        // Compute 'norm' of off-diagonal elements
+        float off = 0.0f;
+
+        for (int i = 0; i < 3; ++i)
+        {
+            for (int j = 0; j < 3; ++j)
+            {
+                if (i == j)
+                    continue;
+                off += a_copied[i][j] * a_copied[i][j];
+            }
+        }
+
+        /* off = sqrt(off); not needed for norm comparison */
+        // Stop when norm no longer decreasing
+        if (n > 2 && off >= prevoff)
+            return;
+
+        prevoff = off;
+    }
 }

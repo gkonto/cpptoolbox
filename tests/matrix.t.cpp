@@ -1,4 +1,5 @@
 #include "doctest.h"
+#include "geom_structs.hpp"
 #include "math_utils.hpp"
 #include <cmath>
 
@@ -174,3 +175,19 @@ TEST_CASE("Inverse of singular (non-invertible) matrix")
 //     Barycentric(a, b, c, p, u, v, w);
 //     CHECK(v >= 0.0f && w >= 0.0f && (v + w) <= 1.0f);
 // }
+
+TEST_CASE("Jacobi decomposition of identity matrix")
+{
+    Matrix33 A;
+    for (int i = 0; i < 3; ++i)
+        A[i][i] = 1.0f;
+
+    Matrix33 v;
+    Jacobi(A, v);
+
+    CHECK(v.orthonormal());
+    Matrix33 D = v.transpose() * A * v;
+    CHECK(isDiagonal(D));
+    for (int i = 0; i < 3; ++i)
+        CHECK(doctest::Approx(D[i][i]) == 1.0f);
+}

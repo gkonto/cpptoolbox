@@ -12,6 +12,9 @@ Point3d operator-(const Point3d &a, const Point3d &b);
 Point2d operator-(const Point2d &a, const Point2d &b);
 bool intersection(const AABB3d a, const AABB3d &b);
 bool intersection(const Sphere &a, const Sphere &b);
+Matrix33 operator*(const Matrix33 &a, const Matrix33 &b);
+
+void Jacobi(const Matrix33 &m, Matrix33 &v);
 
 // Transform AABB 'a' by the matrix 'm' and translation t,
 // find maximum extends, and store result into AABB b.
