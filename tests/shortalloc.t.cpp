@@ -1,7 +1,6 @@
 //#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "shortalloc.hpp"
 #include "arena.hpp"
-#include "barycentric.hpp"
 #include "doctest.h"
 #include <string>
 #include <type_traits>

@@ -1,7 +1,38 @@
-#ifndef MATRIX_HPP_INCLUDED
-#define MATRIX_HPP_INCLUDED
+#ifndef VECTOR_HPP_INCLUDED
+#define VECTOR_HPP_INCLUDED
 
+#include <cmath>
 #include <stddef.h>
+
+struct Point3d;
+struct Point2d;
+
+float dotProd(const Point3d &u, const Point3d &v);
+float dotProd(const Point2d &u, const Point2d &v);
+Point3d crossProd(const Point3d &u, const Point3d &v);
+float magnitute(const Point3d &v);
+void normalize(const Point3d &v, Point3d &n);
+
+template<typename T, size_t N>
+void subArray(const T (&b)[N], const T (&a)[N], T (&trg)[N])
+{
+    for (int i = 0; i < N; ++i)
+    {
+        trg[i] = b[i] - a[i];
+    }
+}
+
+template<typename T, size_t N>
+T dotProdArray(const T (&u)[N], const T (&v)[N])
+{
+    T value = 0;
+    for (size_t i = 0; i < N; ++i)
+    {
+        value += u[i] * v[i];
+    }
+    return value;
+}
+
 
 template<typename T>
 void transpose(const T *src, T *dst, int rows, int cols)

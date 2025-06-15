@@ -1,17 +1,30 @@
-#ifndef BARYCENTRIC_HPP_INCLUDED
-#define BARYCENTRIC_HPP_INCLUDED
+#ifndef GEOMETRY_HPP_INCLUDED
+#define GEOMETRY_HPP_INCLUDED
 
-#include <cmath>
+#include "geom_structs.hpp"
+#include "math_utils.hpp"
+#include <limits.h>
+#include <span>
 
-inline float TriaArea(float x1,
-                      float y1,
-                      float x2,
-                      float y2,
-                      float x3,
-                      float y3)
-{
-    return (x1 - x2) * (y2 - y3) - (x2 - x3) * (y1 - y2);
-}
+
+float triaArea(float x1, float y1, float x2, float y2, float x3, float y3);
+Point3d operator-(const Point3d &a, const Point3d &b);
+Point2d operator-(const Point2d &a, const Point2d &b);
+bool intersection(const AABB3d a, const AABB3d &b);
+bool intersection(const Sphere &a, const Sphere &b);
+
+// Transform AABB 'a' by the matrix 'm' and translation t,
+// find maximum extends, and store result into AABB b.
+void UpdateAABB(AABB3d a, float m[3][3], float t[3], AABB3d &b);
+
+// Compute indices to the two most separated points of the (up to) six points
+// defining the AABB encompassing the point set. Return these as min and max.
+void mostSeparatePointsOnAABB(int &min, int &max, std::span<Point3d> pt);
+Point3d normal(const Point3d &a, const Point3d &b, const Point3d &c);
+
+size_t pointFarthestFromEdge(const Point2d &a,
+                             const Point2d &b,
+                             std::span<Point2d> points);
 
 /*
 Pros:
@@ -22,30 +35,13 @@ Cons:
     Assumes P is in the plane of triange ABC
     Can be unstable if triangle is degenerate (eg area close to zero)
 */
-template<typename T>
-void barycentric1(const T (&a)[3],
-                  const T (&b)[3],
-                  const T (&c)[3],
-                  const T (&p)[3],
+void barycentric1(const Point3d &a,
+                  const Point3d &b,
+                  const Point3d &c,
+                  const Point3d &p,
                   float &u,
                   float &v,
-                  float &w)
-{
-    T v0[3], v1[3], v2[3];
-    sub(b, a, v0);
-    sub(c, a, v1);
-    sub(p, a, v2);
-
-    auto d00 = dot(v0, v0);
-    auto d01 = dot(v0, v1);
-    auto d11 = dot(v1, v1);
-    auto d20 = dot(v2, v0);
-    auto d21 = dot(v2, v1);
-    auto denom = d00 * d11 - d01 * d01;
-    v = (d11 * d20 - d01 * d21) / denom;
-    w = (d00 * d21 - d01 * d20) / denom;
-    u = 1.0f - v - w;
-}
+                  float &w);
 
 /*
 Pros:
@@ -102,4 +98,6 @@ void barycentric2(const T (&a)[3],
     v = nv * ood;
     w = 1.0f - u - v;
 }
+
+
 #endif

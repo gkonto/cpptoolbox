@@ -6,9 +6,9 @@ set(SHORTALLOC_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/shortalloc.t.cpp")
 set(GEOMETRY_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/matrix.t.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/vector.t.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/utils.t.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plane.t.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/convex.t.cpp)
+    ${CMAKE_CURRENT_SOURCE_DIR}/convex.t.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tools.t.cpp)
 
 add_executable(
     alltests

@@ -1,5 +1,5 @@
 #include "doctest.h"
-#include "matrix.hpp"
+#include "math_utils.hpp"
 #include <cmath>
 
 bool are_equal(double d1, double d2)
