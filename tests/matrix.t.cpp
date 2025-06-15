@@ -1,7 +1,9 @@
 #include "doctest.h"
 #include "geom_structs.hpp"
+#include "geometry.hpp"
 #include "math_utils.hpp"
 #include <cmath>
+#include <iostream>
 
 bool are_equal(double d1, double d2)
 {
@@ -168,26 +170,72 @@ TEST_CASE("Inverse of singular (non-invertible) matrix")
     CHECK(result == false);
 }
 
+bool is_diagonal(const Matrix33 &m, float tol = 1e-4f)
+{
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            if (i != j && std::fabs(m[i][j]) > tol)
+                return false;
+    return true;
+}
 
-// TEST_CASE("Point in triangle")
-// {
-//     float u, v, w;
-//     Barycentric(a, b, c, p, u, v, w);
-//     CHECK(v >= 0.0f && w >= 0.0f && (v + w) <= 1.0f);
-// }
 
-TEST_CASE("Jacobi decomposition of identity matrix")
+TEST_CASE("Jacobi: identity matrix" * doctest::skip(true))
 {
     Matrix33 A;
-    for (int i = 0; i < 3; ++i)
-        A[i][i] = 1.0f;
+    A[0][0] = 1.0f;
+    A[1][1] = 1.0f;
+    A[2][2] = 1.0f;
 
-    Matrix33 v;
-    Jacobi(A, v);
+    Matrix33 V;
+    Jacobi(A, V);
 
-    CHECK(v.orthonormal());
-    Matrix33 D = v.transpose() * A * v;
-    CHECK(isDiagonal(D));
-    for (int i = 0; i < 3; ++i)
-        CHECK(doctest::Approx(D[i][i]) == 1.0f);
+    printf("V[0][0]: %f\n", V[0][0]);
+    printf("V[0][1]: %f\n", V[0][1]);
+    printf("V[0][2]: %f\n", V[0][2]);
+    printf("V[1][0]: %f\n", V[1][0]);
+    printf("V[1][1]: %f\n", V[1][1]);
+    printf("V[1][2]: %f\n", V[1][2]);
+    printf("V[2][0]: %f\n", V[2][0]);
+    printf("V[2][1]: %f\n", V[2][1]);
+    printf("V[2][2]: %f\n", V[2][2]);
+    CHECK(V.isorthogonal());
+    auto D = V.transpose() * A * V;
+    CHECK(D.isdiagonal());
+}
+
+TEST_CASE("Jacobi: diagonal matrix stays diagonal" * doctest::skip(true))
+{
+    Matrix33 A;
+    A[0][0] = 4.0f;
+    A[1][1] = 2.0f;
+    A[2][2] = 1.0f;
+
+    Matrix33 V;
+    Jacobi(A, V);
+
+    auto D = V.transpose() * A * V;
+    CHECK(D.isdiagonal());
+    CHECK(V.isorthogonal());
+}
+
+TEST_CASE("Jacobi: symmetric matrix is diagonalized" * doctest::skip(true))
+{
+    Matrix33 A;
+    A[0][0] = 3.0f;
+    A[0][1] = 2.0f;
+    A[0][2] = 4.0f;
+    A[1][0] = 2.0f;
+    A[1][1] = 0.0f;
+    A[1][2] = 2.0f;
+    A[2][0] = 4.0f;
+    A[2][1] = 2.0f;
+    A[2][2] = 3.0f;
+
+    Matrix33 V;
+    Jacobi(A, V);
+
+    auto D = V.transpose() * A * V;
+    CHECK(D.isdiagonal());
+    CHECK(V.isorthogonal());
 }

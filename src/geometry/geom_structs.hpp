@@ -51,7 +51,7 @@ public:
         return &m[row * 3];
     }
 
-    Matrix33 transpose()
+    Matrix33 transpose() const
     {
         Matrix33 trg;
         trg.m[0 * 3 + 0] = m[0 * 3 + 0];
@@ -66,8 +66,8 @@ public:
         return trg;
     }
 
-    bool isorthonormal();
-    bool isdiagonal();
+    bool isorthogonal() const;
+    bool isdiagonal() const;
 
     friend Matrix33 operator*(const Matrix33 &a, const Matrix33 &b);
 private:
